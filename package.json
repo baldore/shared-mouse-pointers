@@ -1,0 +1,11 @@
+{
+  "name": "shared-mouse-pointers",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "url": "git@github.com:baldore/shared-mouse-pointers.git",
+    "type": "git"
+  },
+  "author": "baldore <acornssn@gmail.com>",
+  "license": "MIT"
+}
