@@ -7,5 +7,13 @@
     "type": "git"
   },
   "author": "baldore <acornssn@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start": "node server",
+    "start:dev": "nodemon ./server.js"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "nodemon": "^1.11.0"
+  }
 }
