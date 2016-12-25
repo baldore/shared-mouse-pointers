@@ -1,10 +1,12 @@
 'use strict';
 
-const express = require('express');
-const app = express();
+const app = require('express')();
+const port = 3000;
 
 app.get('/', function (req, res) {
-  res.send('hola mundo genial');
+  res.sendFile(`${__dirname}/views/index.html`);
 });
 
-app.listen(3000, () => console.log('started...'));
+app.listen(port, function () {
+  console.log(`Server started in port ${port}`);
+});
