@@ -1,11 +1,10 @@
 'use strict'
 
-const app = require('express')()
+const express = require('express')
+const app = express()
 const port = 3000
 
-app.get('/', function (req, res) {
-  res.sendFile(`${__dirname}/views/index.html`)
-})
+app.use(express.static('public'))
 
 app.listen(port, function () {
   console.log(`Server started in port ${port}`)
