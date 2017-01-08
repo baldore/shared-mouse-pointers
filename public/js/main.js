@@ -1,5 +1,9 @@
+/* global io */
 (() => {
   'use strict'
 
-  console.log('hola mundo genial')
+  const socket = io.connect('http://localhost:3000')
+  socket.on('news', function (data) {
+    console.log(data)
+  })
 })()
