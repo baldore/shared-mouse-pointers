@@ -1,17 +1,21 @@
-/* global io */
+/* global Rx */
 (() => {
   'use strict'
 
-  const socket = io.connect('http://localhost:3000')
+  const firstView = document.querySelector('#first-view')
+  const secondView = document.querySelector('#second-view')
+  const form = firstView.querySelector('form')
+  const input = form.querySelector('input[type="text"]')
 
-  socket.on('news', function (data) {
-    console.log(data)
-  })
+  const inputValueOnSubmit$ = Rx.Observable.fromEvent(form, 'submit')
+    .do((e) => e.preventDefault())
+    .map(() => input.value.trim())
+    .filter((string) => string !== '')
 
-  const form = document.querySelector('#first-view form')
-
-  form.addEventListener('submit', function onFormSubmit (e) {
-    e.preventDefault()
-    console.log('submitting')
-  })
+  inputValueOnSubmit$.subscribe(
+    () => {
+      firstView.remove()
+      secondView.classList.remove('hidden')
+    }
+  )
 })()
