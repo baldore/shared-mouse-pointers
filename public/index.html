@@ -10,24 +10,13 @@
 </head>
 <body>
 
-<div class="full-screen-view" id="first-view">
-  <form>
-    <label class="form-group">
-      <span class="form-label">What's your pointer's name?</span>
-      <input class="form-input" type="text" name="username">
-    </label>
-  </form>
-</div>
+<div id="app"></div>
 
-<div id="second-view" class="hidden">
-  <div class="fixed-panel" id="current-coordinates">
-    <p>x (percentage): <span id="x-coord"></span></p>
-    <p>y (percentage): <span id="y-coord"></span></p>
-  </div>
-</div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/5.0.1/Rx.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/rxjs/4.1.0/rx.all.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.4.2/react-dom.min.js"></script>
   <script src="/js/main.js"></script>
 </body>
 </html>
