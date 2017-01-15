@@ -9,17 +9,9 @@
     constructor(props) {
       super(props)
 
-      this.onFormSubmit = this.onFormSubmit.bind(this)
-
       this.state = {
         username: null
       }
-
-      this.socket = null
-    }
-
-    onFormSubmit(username) {
-      this.setState({ username })
     }
 
     render() {
@@ -28,7 +20,7 @@
       return (
         r('div', null, [
           !username
-            ? r(SetUsernameView, { onSubmit: this.onFormSubmit })
+            ? r(SetUsernameView, { onSubmit: (name) => this.setState({ username: name }) })
             : r(SharedPointersView, { username })
         ])
       )
@@ -75,23 +67,41 @@
     constructor(props) {
       super(props)
 
+      this.state = {
+        x: null,
+        y: null,
+        pointers: []
+      }
+
       this.socket = null
       this.pointerMoveSubscription = null
     }
 
     componentDidMount() {
+      const { username } = this.props
+
       this.socket = io.connect('http://localhost:3000')
+
       const pointerMove$ = Rx.Observable.fromEvent(document, 'mousemove')
         .map((e) => ({
-          username: this.props.username,
+          username,
           x: Math.floor((e.clientX / window.innerWidth).toFixed(2) * 100),
           y: Math.floor((e.clientY / window.innerHeight).toFixed(2) * 100)
         }))
-        .throttle(40)
+        .throttle(15)
 
       this.pointerMoveSubscription = pointerMove$.subscribe(
-        (data) => this.socket.emit('pointer-move', data)
+        (data) => {
+          this.socket.emit('pointer-move', data)
+          this.setState({ x: data.x, y: data.y })
+        }
       )
+
+      this.socket.on('pointers-update', (pointers) => {
+        delete pointers[username] // Avoids to show our own pointer
+        const otherPointers = Object.keys(pointers).map((pointerUsername) => pointers[pointerUsername])
+        this.setState({ pointers: otherPointers })
+      })
     }
 
     componentWillUnmount() {
@@ -100,38 +110,41 @@
     }
 
     render() {
+      const { x, y, pointers } = this.state
+
       return (
         r('div', null, [
-          r('div', { className: 'fixed-panel' }, [
-            r('p', null, `x (percentage):`),
-            r('p', null, `y (percentage):`)
-          ])
+          r(Pointers, { pointers }),
+          (!x || !y)
+            ? null
+            : r('div', { className: 'fixed-panel' }, [
+              r('p', null, `x (percentage): ${x}`),
+              r('p', null, `y (percentage): ${y}`)
+            ])
         ])
       )
     }
   }
 
-  ReactDOM.render(React.createElement(App), document.querySelector('#app'))
+  function Pointers({ pointers = [] }) {
+    if (pointers.length === 0) {
+      return null
+    }
 
-  // socket.on('response', (data) => console.log('taaake your data', data))
-  //
-  // const pointerMove$ = inputValueOnSubmit$
-  //   .flatMap((username) =>
-  //     Rx.Observable.fromEvent(document, 'mousemove')
-  //       .map((e) => ({
-  //         username,
-  //         x: Math.floor((e.clientX / window.innerWidth).toFixed(2) * 100),
-  //         y: Math.floor((e.clientY / window.innerHeight).toFixed(2) * 100)
-  //       }))
-  //   )
-  //   .throttle(40)
-  //
-  // pointerMove$.subscribe(
-  //   (data) => {
-  //     socket.emit('pointer-move', data)
-  //     // Maybe this should be done in the response, since the data is being already sent
-  //     xCoord.innerText = `${data.x}%`
-  //     yCoord.innerText = `${data.y}%`
-  //   }
-  // )
+    const pointerElements = pointers.map((pointer) =>
+      r('div', {
+        className: 'fixed-pointer',
+        style: {
+          left: `${pointer.x}%`,
+          top: `${pointer.y}%`
+        }
+      })
+    )
+
+    return (
+      r('div', null, pointerElements)
+    )
+  }
+
+  ReactDOM.render(React.createElement(App), document.querySelector('#app'))
 })()

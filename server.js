@@ -22,16 +22,11 @@ const clientMovePointer$ = client$
   .flatMap((client) => Rx.Observable.create(
     (observer) => client.on('pointer-move', observer.onNext.bind(observer)))
   )
+  .scan(function (acc, pointerData) {
+    acc[pointerData.username] = pointerData
+    return acc
+  }, {})
 
 clientMovePointer$.subscribe(
-  (data) => console.log(data.username, data)
+  (pointersData) => io.sockets.emit('pointers-update', pointersData)
 )
-
-// client$.subscribe(
-//   (client) => {
-//     client.on('pointer-move', (data) => {
-//       console.log(data)
-//       io.sockets.emit('response', 'it works....')
-//     })
-//   }
-// )

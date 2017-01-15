@@ -55,6 +55,13 @@ input[type="text"]:focus {
   margin: 0;
 }
 
+.fixed-pointer {
+  position: fixed;
+  height: 2px;
+  width: 2px;
+  background-color: #000000;
+}
+
 /* Helpers */
 .hidden {
   visibility: hidden;
