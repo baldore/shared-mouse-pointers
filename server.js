@@ -19,14 +19,41 @@ const client$ = Rx.Observable.create((observer) => {
 })
 
 const clientMovePointer$ = client$
-  .flatMap((client) => Rx.Observable.create(
-    (observer) => client.on('pointer-move', observer.onNext.bind(observer)))
+  .flatMap((client) => Rx.Observable.create((observer) =>
+    client.on('pointer-move', (pointerData) => {
+      const action = { type: 'POINTER_MOVE', pointerData }
+      observer.onNext(action)
+    }))
   )
-  .scan(function (acc, pointerData) {
-    acc[pointerData.username] = pointerData
+
+const clientDisconnects$ = client$
+  .flatMap((client) => Rx.Observable.create((observer) =>
+    client.on('disconnect', () => {
+      const action = { type: 'USER_DISCONNECTED', id: client.id }
+      observer.onNext(action)
+    }))
+  )
+
+// Since it's not being managed with immutable structures, it looks ugly, but it works :)
+const stateManager$ =
+  Rx.Observable.merge(
+    clientMovePointer$,
+    clientDisconnects$
+  )
+  .scan(function dirtyReducer (acc, action) {
+    switch (action.type) {
+      case 'POINTER_MOVE':
+        acc[action.pointerData.id] = action.pointerData
+        break
+
+      case 'USER_DISCONNECTED':
+        delete acc[action.id]
+        break
+    }
+
     return acc
   }, {})
 
-clientMovePointer$.subscribe(
+stateManager$.subscribe(
   (pointersData) => io.sockets.emit('pointers-update', pointersData)
 )

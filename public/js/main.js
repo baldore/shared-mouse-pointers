@@ -84,6 +84,7 @@
 
       const pointerMove$ = Rx.Observable.fromEvent(document, 'mousemove')
         .map((e) => ({
+          id: this.socket.id,
           username,
           x: Math.floor((e.clientX / window.innerWidth).toFixed(2) * 100),
           y: Math.floor((e.clientY / window.innerHeight).toFixed(2) * 100)
@@ -98,8 +99,8 @@
       )
 
       this.socket.on('pointers-update', (pointers) => {
-        delete pointers[username] // Avoids to show our own pointer
-        const otherPointers = Object.keys(pointers).map((pointerUsername) => pointers[pointerUsername])
+        delete pointers[this.socket.id] // Avoids to show our own pointer
+        const otherPointers = Object.keys(pointers).map((id) => pointers[id])
         this.setState({ pointers: otherPointers })
       })
     }
