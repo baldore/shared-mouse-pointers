@@ -27,7 +27,7 @@ const clientMovePointer$ = clientConnected$
 const clientDisconnected$ = clientConnected$
   .flatMap((client) =>
     Rx.Observable.fromEvent(client, 'disconnect')
-      .map((client) => ({
+      .map(() => ({
         type: 'USER_DISCONNECTED',
         id: client.id
       }))
