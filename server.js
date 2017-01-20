@@ -14,31 +14,29 @@ server.listen(port, function () {
   console.log(`Server started in port ${port}`)
 })
 
-const client$ = Rx.Observable.create((observer) => {
-  io.on('connection', (client) => observer.onNext(client))
-})
+const clientConnected$ = Rx.Observable.fromEvent(io, 'connection')
 
-const clientMovePointer$ = client$
-  .flatMap((client) => Rx.Observable.create((observer) =>
-    client.on('pointer-move', (pointerData) => {
-      const action = { type: 'POINTER_MOVE', pointerData }
-      observer.onNext(action)
-    }))
-  )
+const clientMovePointer$ = clientConnected$
+  .flatMap((client) => Rx.Observable.fromEvent(client, 'pointer-move'))
+  .map((pointerData) => ({
+    type: 'POINTER_MOVE',
+    pointerData
+  }))
 
-const clientDisconnects$ = client$
-  .flatMap((client) => Rx.Observable.create((observer) =>
-    client.on('disconnect', () => {
-      const action = { type: 'USER_DISCONNECTED', id: client.id }
-      observer.onNext(action)
-    }))
+const clientDisconnected$ = clientConnected$
+  .flatMap((client) =>
+    Rx.Observable.fromEvent(client, 'disconnect')
+      .map(() => ({
+        type: 'USER_DISCONNECTED',
+        id: client.id
+      }))
   )
 
 // Since it's not being managed with immutable structures, it looks ugly, but it works :)
 const stateManager$ =
   Rx.Observable.merge(
     clientMovePointer$,
-    clientDisconnects$
+    clientDisconnected$
   )
   .scan(function dirtyReducer (acc, action) {
     switch (action.type) {
