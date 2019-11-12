@@ -38,19 +38,19 @@ const stateManager$ =
     clientMovePointer$,
     clientDisconnected$
   )
-  .scan(function dirtyReducer (acc, action) {
-    switch (action.type) {
-      case 'POINTER_MOVE':
-        acc[action.pointerData.id] = action.pointerData
-        break
+    .scan(function dirtyReducer (acc, action) {
+      switch (action.type) {
+        case 'POINTER_MOVE':
+          acc[action.pointerData.id] = action.pointerData
+          break
 
-      case 'USER_DISCONNECTED':
-        delete acc[action.id]
-        break
-    }
+        case 'USER_DISCONNECTED':
+          delete acc[action.id]
+          break
+      }
 
-    return acc
-  }, {})
+      return acc
+    }, {})
 
 stateManager$.subscribe(
   (pointersData) => io.sockets.emit('pointers-update', pointersData)

@@ -49,7 +49,7 @@
         r('div', { className: 'full-screen-view' }, [
           r('form', { onSubmit: this.setUsername }, [
             r('label', { className: 'form-group' }, [
-              r('span', { className: 'form-label' }, `What's your name?`),
+              r('span', { className: 'form-label' }, 'What\'s your name?'),
               r('input', {
                 className: 'form-input',
                 type: 'text',
