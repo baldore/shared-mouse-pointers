@@ -17,7 +17,7 @@
   "dependencies": {
     "express": "^4.14.0",
     "rx": "^4.1.0",
-    "socket.io": "^1.7.2"
+    "socket.io": "^2.3.0"
   },
   "devDependencies": {
     "husky": "^0.12.0",

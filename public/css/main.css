@@ -57,8 +57,8 @@ input[type="text"]:focus {
 
 .fixed-pointer {
   position: fixed;
-  height: 2px;
-  width: 2px;
+  height: 4px;
+  width: 4px;
   background-color: #000000;
 }
 
